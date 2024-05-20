@@ -1,22 +1,30 @@
 ---
-- name: Install Nginx
-  hosts: your_target_host
-  become: yes
+- name: install nginx
+  hosts: webserver
+  vars:
+    ansible_become_password: ""
+    ansible_user: 'ubuntu'
+  become: true
+
   tasks:
-    - name: Update apt package cache
+    - name: Update apt cache
       apt:
         update_cache: yes
-      when: ansible_os_family == 'Debian'  # Adjust for other package managers
+      register: apt_update
 
-    - name: Install Nginx
-      package:
+    - name: Install java
+      apt:
+        name: default-jre
+        state: present
+
+    - name: Install nginx
+      apt:
         name: nginx
         state: present
-      when: ansible_os_family == 'Debian'  # Adjust for other package managers
 
-    - name: Start Nginx service
+
+    - name: Start Jenkins service
       service:
         name: nginx
         state: started
         enabled: yes
-      when: ansible_os_family == 'Debian'  # Adjust for other init systems
